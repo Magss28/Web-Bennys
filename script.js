@@ -10,6 +10,7 @@ function toggleMenu() {
     let sidebar = document.getElementById("sidebar");
     let main = document.getElementById("main");
 
+    // Ajuste de ancho para el desplazamiento lateral
     if (sidebar.style.width === "250px") {
         sidebar.style.width = "0";
         main.style.marginLeft = "0";
@@ -26,9 +27,11 @@ function calcular() {
     let vistaHabitual = document.getElementById("habitual");
     let vistaCompleta = document.getElementById("completo");
     
-    if (vistaHabitual.style.display === "none" && vistaCompleta.style.display === "none") return;
+    // Verificamos cuál está activa mediante la clase CSS definida en el style.css
+    if (!vistaHabitual.classList.contains("seccion-activa") && 
+        !vistaCompleta.classList.contains("seccion-activa")) return;
 
-    let contenedor = vistaHabitual.style.display === "block" ? vistaHabitual : vistaCompleta;
+    let contenedor = vistaHabitual.classList.contains("seccion-activa") ? vistaHabitual : vistaCompleta;
     let filas = contenedor.querySelectorAll("tbody tr");
     let totalPiezas = 0;
 
@@ -49,10 +52,10 @@ function calcular() {
         totalPiezas += totalFila;
     });
 
-    // 2. Sumar el acumulador de Full Tuning al total de las piezas
+    // 2. Sumar el acumulador de Full Tuning
     let montoFinal = totalPiezas + acumuladoFullTuning;
 
-    // 3. Actualizar los bloques de la derecha
+    // 3. Actualizar los bloques de la derecha (Monto Total)
     contenedor.querySelectorAll(".monto-total").forEach(span => {
         span.innerText = montoFinal.toLocaleString();
     });
@@ -73,7 +76,7 @@ function calcular() {
 }
 
 /**
- * Función que se activa al dar clic en el cabezal del panel Full Tuning
+ * Función para aplicar el bono de Full Tuning
  */
 function aplicarFullTuning() {
     acumuladoFullTuning += 120000;
@@ -81,51 +84,58 @@ function aplicarFullTuning() {
 }
 
 /**
- * Copiar monto
+ * Copiar monto al portapapeles sin puntos ni símbolos
  */
 function copiarTotal() {
-    let vistaHabitual = document.getElementById("habitual");
-    let contenedor = (vistaHabitual.style.display === "block") ? vistaHabitual : document.getElementById("completo");
+    let habitual = document.getElementById("habitual");
+    let contenedor = habitual.classList.contains("seccion-activa") ? habitual : document.getElementById("completo");
     let totalTexto = contenedor.querySelector(".monto-total").innerText;
     let soloNumero = totalTexto.replace(/\./g, ""); 
     navigator.clipboard.writeText(soloNumero);
 }
 
 /**
- * Reiniciar todo
+ * Reiniciar todos los inputs y el acumulador
  */
 function reiniciar() {
-    let contenedores = [document.getElementById("habitual"), document.getElementById("completo")];
-    contenedores.forEach(cont => {
-        if(cont) cont.querySelectorAll("input").forEach(i => i.value = 0);
-    });
-    acumuladoFullTuning = 0; // Limpiamos el acumulador
+    document.querySelectorAll("input").forEach(i => i.value = 0);
+    acumuladoFullTuning = 0;
     calcular();
 }
 
+/**
+ * Lógica de navegación entre vistas usando clases CSS
+ */
+function ocultarTodas() {
+    document.getElementById("habitual").classList.remove("seccion-activa");
+    document.getElementById("completo").classList.remove("seccion-activa");
+    document.getElementById("vista-info").classList.remove("seccion-activa");
+}
+
 function mostrarHabitual() {
-    document.getElementById("habitual").style.display = "block";
-    document.getElementById("completo").style.display = "none";
-    document.getElementById("vista-info").style.display = "none";
-    document.querySelector("#main h2").style.display = "block";
+    ocultarTodas();
+    document.getElementById("habitual").classList.add("seccion-activa");
+    document.getElementById("titulo-principal").style.display = "block";
     calcular();
 }
 
 function mostrarCompleto() {
-    document.getElementById("habitual").style.display = "none";
-    document.getElementById("completo").style.display = "block";
-    document.getElementById("vista-info").style.display = "none";
-    document.querySelector("#main h2").style.display = "block";
+    ocultarTodas();
+    document.getElementById("completo").classList.add("seccion-activa");
+    document.getElementById("titulo-principal").style.display = "block";
     calcular();
 }
 
 function mostrarInfo() {
-    document.getElementById("habitual").style.display = "none";
-    document.getElementById("completo").style.display = "none";
-    document.getElementById("vista-info").style.display = "block";
-    document.querySelector("#main h2").style.display = "none";
+    ocultarTodas();
+    document.getElementById("vista-info").classList.add("seccion-activa");
+    document.getElementById("titulo-principal").style.display = "none";
 }
 
+/**
+ * Al cargar la página, inicializamos la vista deseada
+ */
 window.onload = function() {
-    calcular();
+    // Iniciamos en la vista completa por defecto
+    mostrarCompleto();
 };

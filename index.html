@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Benny's </title>
+    <title>Calculadora Benny's</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,14 +18,14 @@
         <button class="btn-sidebar" onclick="mostrarHabitual(); toggleMenu()">📋 Vista Habitual</button>
         <button class="btn-sidebar" onclick="mostrarCompleto(); toggleMenu()">🛠️ Vista Completa</button>
         <button class="btn-sidebar" onclick="mostrarInfo(); toggleMenu()">ℹ️ Información</button>
-        <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+        <hr class="separador-sidebar">
         <button class="btn-sidebar btn-reset-sidebar" onclick="reiniciar(); toggleMenu()">🧹 Limpiar Todo</button>
     </div>
 
     <div id="main">
-        <h2>Calculadora del Benny's</h2>
+        <h2 id="titulo-principal">Calculadora del Benny's</h2>
 
-        <div id="habitual" style="display:none;">
+        <div id="habitual" class="seccion-calculadora">
             <div class="contenedor-flex">
                 <table>
                     <thead>
@@ -77,7 +77,7 @@
 
                     <div class="panel-control panel-control-der">
                         <div class="bloque-post bloque-full-tuning">
-                            <div class="titulo-full" onclick="aplicarFullTuning()" style="cursor: pointer;">Full Tuning $120.000 (Todo Junto)</div>
+                            <div class="titulo-full" onclick="aplicarFullTuning()">Full Tuning $120.000 (Todo Junto)</div>
                             <div class="contenido-full">
                                 <ul>
                                     <li><span>•</span> Motor V8: 50.000</li>
@@ -93,7 +93,7 @@
             </div>
         </div>
 
-        <div id="completo" style="display:block;">
+        <div id="completo" class="seccion-calculadora seccion-activa">
             <div class="contenedor-flex">
                 <table>
                     <thead>
@@ -162,7 +162,7 @@
 
                     <div class="panel-control panel-control-der">
                         <div class="bloque-post bloque-full-tuning">
-                            <div class="titulo-full" onclick="aplicarFullTuning()" style="cursor: pointer;">Full Tuning $120.000 (Todo Junto)</div>
+                            <div class="titulo-full" onclick="aplicarFullTuning()">Full Tuning $120.000 (Todo Junto)</div>
                             <div class="contenido-full">
                                 <ul>
                                     <li><span>•</span> Motor V8: 50.000</li>
@@ -178,7 +178,7 @@
             </div>
         </div>
 
-        <div id="vista-info" style="display:none;">
+        <div id="vista-info" class="seccion-info">
             <div class="banner-contenedor">
                 <img src="icon.png" alt="Benny's Icon" class="banner-img">
             </div>
