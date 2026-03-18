@@ -1,16 +1,15 @@
 /**
- * Variable global para que el Full Tuning se sume y no se borre
+ * Variable global para el acumulado del Full Tuning
  */
 let acumuladoFullTuning = 0;
 
 /**
- * Función para abrir y cerrar el menú lateral (Sidebar)
+ * Control del Menú Lateral (Sidebar)
  */
 function toggleMenu() {
-    let sidebar = document.getElementById("sidebar");
-    let main = document.getElementById("main");
+    const sidebar = document.getElementById("sidebar");
+    const main = document.getElementById("main");
 
-    // Ajuste de ancho para el desplazamiento lateral
     if (sidebar.style.width === "250px") {
         sidebar.style.width = "0";
         main.style.marginLeft = "0";
@@ -21,62 +20,121 @@ function toggleMenu() {
 }
 
 /**
- * Función principal de cálculo
+ * Lógica de Navegación: Ocultar todas las secciones antes de mostrar la elegida
+ */
+function ocultarTodas() {
+    const secciones = ["habitual", "completo", "vista-info"];
+    secciones.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = "none";
+            el.classList.remove("seccion-activa");
+        }
+    });
+}
+
+/**
+ * Mostrar Vista Habitual
+ */
+function mostrarHabitual() {
+    ocultarTodas();
+    const el = document.getElementById("habitual");
+    if (el) {
+        el.style.display = "block";
+        el.classList.add("seccion-activa");
+    }
+    document.getElementById("titulo-principal").style.display = "block";
+    calcular();
+}
+
+/**
+ * Mostrar Vista Completa
+ */
+function mostrarCompleto() {
+    ocultarTodas();
+    const el = document.getElementById("completo");
+    if (el) {
+        el.style.display = "block";
+        el.classList.add("seccion-activa");
+    }
+    document.getElementById("titulo-principal").style.display = "block";
+    calcular();
+}
+
+/**
+ * Mostrar Vista de Información / Normativa
+ */
+function mostrarInfo() {
+    ocultarTodas();
+    const el = document.getElementById("vista-info");
+    if (el) {
+        el.style.display = "block";
+    }
+    document.getElementById("titulo-principal").style.display = "none";
+}
+
+/**
+ * Función Principal de Cálculo
+ * Lee los inputs de la sección activa y actualiza los totales y descuentos
  */
 function calcular() {
-    let vistaHabitual = document.getElementById("habitual");
-    let vistaCompleta = document.getElementById("completo");
+    const habitual = document.getElementById("habitual");
+    const completo = document.getElementById("completo");
     
-    // Verificamos cuál está activa mediante la clase CSS definida en el style.css
-    if (!vistaHabitual.classList.contains("seccion-activa") && 
-        !vistaCompleta.classList.contains("seccion-activa")) return;
+    // Identificar qué sección está activa para procesar sus datos
+    const contenedor = habitual.classList.contains("seccion-activa") ? habitual : 
+                       (completo.classList.contains("seccion-activa") ? completo : null);
+    
+    if (!contenedor) return;
 
-    let contenedor = vistaHabitual.classList.contains("seccion-activa") ? vistaHabitual : vistaCompleta;
-    let filas = contenedor.querySelectorAll("tbody tr");
     let totalPiezas = 0;
+    const filas = contenedor.querySelectorAll("tbody tr");
 
-    // 1. Recorrer la tabla de piezas
     filas.forEach((fila) => {
-        let input = fila.querySelector("input");
-        if(!input) return;
+        const input = fila.querySelector("input");
+        if (!input) return; // Saltar filas de subcategoría
 
-        let cantidad = Math.max(0, parseInt(input.value) || 0);
+        // Validar que no haya números negativos
+        const cantidad = Math.max(0, parseInt(input.value) || 0);
         input.value = cantidad; 
 
-        let precioTexto = fila.cells[3].innerText;
-        let precio = parseInt(precioTexto.replace(/\D/g, ""));
+        // Obtener el precio unitario de la cuarta columna (índice 3)
+        const precioTexto = fila.cells[3].innerText;
+        const precio = parseInt(precioTexto.replace(/\D/g, ""));
         
-        let totalFila = cantidad * precio;
+        // Calcular total por fila y mostrarlo en la quinta columna (índice 4)
+        const totalFila = cantidad * precio;
         fila.cells[4].innerText = "$" + totalFila.toLocaleString();
         
         totalPiezas += totalFila;
     });
 
-    // 2. Sumar el acumulador de Full Tuning
-    let montoFinal = totalPiezas + acumuladoFullTuning;
+    // Sumar el acumulado de botones especiales (como Full Tuning)
+    const montoFinal = totalPiezas + acumuladoFullTuning;
 
-    // 3. Actualizar los bloques de la derecha (Monto Total)
+    // Actualizar todos los SPAN de monto-total en la vista activa
     contenedor.querySelectorAll(".monto-total").forEach(span => {
         span.innerText = montoFinal.toLocaleString();
     });
 
-    // 4. Actualizar tabla de descuentos
-    let tablaDescuento = contenedor.querySelector(".tabla-descuento");
-    if (tablaDescuento) {
-        let filasDesc = tablaDescuento.querySelectorAll("tbody tr");
-        let porcentajes = [0.05, 0.10, 0.15]; 
+    // Actualizar la tabla de descuentos (5%, 10%, 15%)
+    const tablaDesc = contenedor.querySelector(".tabla-descuento");
+    if (tablaDesc) {
+        const filasDesc = tablaDesc.querySelectorAll("tbody tr");
+        const porcentajes = [0.05, 0.10, 0.15]; 
 
         filasDesc.forEach((fila, index) => {
+            // Columna 0: Monto Total original
             fila.cells[0].innerText = "$" + montoFinal.toLocaleString();
-            let montoDescontado = montoFinal * porcentajes[index];
-            let resultadoFinal = montoFinal - montoDescontado;
-            fila.cells[2].innerText = "$" + Math.round(resultadoFinal).toLocaleString();
+            // Columna 2: Monto con descuento aplicado
+            const resultado = montoFinal - (montoFinal * porcentajes[index]);
+            fila.cells[2].innerText = "$" + Math.round(resultado).toLocaleString();
         });
     }
 }
 
 /**
- * Función para aplicar el bono de Full Tuning
+ * Añadir el coste del Full Tuning al total
  */
 function aplicarFullTuning() {
     acumuladoFullTuning += 120000;
@@ -84,18 +142,7 @@ function aplicarFullTuning() {
 }
 
 /**
- * Copiar monto al portapapeles sin puntos ni símbolos
- */
-function copiarTotal() {
-    let habitual = document.getElementById("habitual");
-    let contenedor = habitual.classList.contains("seccion-activa") ? habitual : document.getElementById("completo");
-    let totalTexto = contenedor.querySelector(".monto-total").innerText;
-    let soloNumero = totalTexto.replace(/\./g, ""); 
-    navigator.clipboard.writeText(soloNumero);
-}
-
-/**
- * Reiniciar todos los inputs y el acumulador
+ * Reiniciar todos los valores a cero
  */
 function reiniciar() {
     document.querySelectorAll("input").forEach(i => i.value = 0);
@@ -104,38 +151,26 @@ function reiniciar() {
 }
 
 /**
- * Lógica de navegación entre vistas usando clases CSS
+ * Copiar el monto total al portapapeles (solo números)
  */
-function ocultarTodas() {
-    document.getElementById("habitual").classList.remove("seccion-activa");
-    document.getElementById("completo").classList.remove("seccion-activa");
-    document.getElementById("vista-info").classList.remove("seccion-activa");
-}
-
-function mostrarHabitual() {
-    ocultarTodas();
-    document.getElementById("habitual").classList.add("seccion-activa");
-    document.getElementById("titulo-principal").style.display = "block";
-    calcular();
-}
-
-function mostrarCompleto() {
-    ocultarTodas();
-    document.getElementById("completo").classList.add("seccion-activa");
-    document.getElementById("titulo-principal").style.display = "block";
-    calcular();
-}
-
-function mostrarInfo() {
-    ocultarTodas();
-    document.getElementById("vista-info").classList.add("seccion-activa");
-    document.getElementById("titulo-principal").style.display = "none";
+function copiarTotal() {
+    const activo = document.querySelector(".seccion-activa");
+    if (!activo) return;
+    
+    const totalTexto = activo.querySelector(".monto-total").innerText;
+    // Eliminar puntos de millares para que sea un número limpio
+    const soloNumero = totalTexto.replace(/\./g, ""); 
+    
+    navigator.clipboard.writeText(soloNumero).then(() => {
+        alert("Copiado al portapapeles: $" + soloNumero);
+    }).catch(err => {
+        console.error('Error al copiar: ', err);
+    });
 }
 
 /**
- * Al cargar la página, inicializamos la vista deseada
+ * Al cargar la página, inicializar en la Vista Completa
  */
 window.onload = function() {
-    // Iniciamos en la vista completa por defecto
     mostrarCompleto();
 };
