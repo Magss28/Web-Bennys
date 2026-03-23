@@ -158,12 +158,9 @@ function copiarTotal() {
     if (!activo) return;
     
     const totalTexto = activo.querySelector(".monto-total").innerText;
-    // Eliminar puntos de millares para que sea un número limpio
     const soloNumero = totalTexto.replace(/\./g, ""); 
     
-    navigator.clipboard.writeText(soloNumero).then(() => {
-        alert("Copiado al portapapeles: $" + soloNumero);
-    }).catch(err => {
+    navigator.clipboard.writeText(soloNumero).catch(err => {
         console.error('Error al copiar: ', err);
     });
 }
