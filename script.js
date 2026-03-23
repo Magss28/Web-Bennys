@@ -158,11 +158,14 @@ function copiarTotal() {
     if (!activo) return;
     
     const totalTexto = activo.querySelector(".monto-total").innerText;
-    const soloNumero = totalTexto.replace(/\./g, ""); 
-    
-    navigator.clipboard.writeText(soloNumero).catch(err => {
-        console.error("Error al copiar:", err);
-    });
+    const soloNumero = totalTexto.replace(/\./g, "");
+
+    const input = document.createElement("input");
+    input.value = soloNumero;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    document.body.removeChild(input);
 }
 
 /**
