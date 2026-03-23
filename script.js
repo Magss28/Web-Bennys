@@ -161,7 +161,7 @@ function copiarTotal() {
     const soloNumero = totalTexto.replace(/\./g, ""); 
     
     navigator.clipboard.writeText(soloNumero).catch(err => {
-        console.error('Error al copiar: ', err);
+        console.error("Error al copiar:", err);
     });
 }
 
