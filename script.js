@@ -1,6 +1,5 @@
 /**
- * Variable global para el acumulado del Full Tuning
- */
+ * Variable global para el acumulado del Full Tuning*/
 let acumuladoFullTuning = 0;
 
 /**
@@ -20,8 +19,7 @@ function toggleMenu() {
 }
 
 /**
- * Lógica de Navegación: Ocultar todas las secciones antes de mostrar la elegida
- */
+ * Ocultar todas las secciones antes de mostrar la elegida*/
 function ocultarTodas() {
     const secciones = ["habitual", "completo", "vista-info"];
     secciones.forEach(id => {
@@ -34,8 +32,7 @@ function ocultarTodas() {
 }
 
 /**
- * Mostrar Vista Habitual
- */
+ * Mostrar Vista Habitual*/
 function mostrarHabitual() {
     ocultarTodas();
     const el = document.getElementById("habitual");
