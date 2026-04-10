@@ -134,7 +134,7 @@ function calcular() {
  * Añadir el coste del Full Tuning al total
  */
 function aplicarFullTuning() {
-    acumuladoFullTuning += 120000;
+    acumuladoFullTuning += 110000;
     calcular();
 }
 
